@@ -321,7 +321,7 @@ export default function Home() {
   ];
 
   return (
-    <div className="min-h-screen bg-white text-gray-900">
+    <div className="min-h-screen bg-white text-gray-900 overflow-x-hidden w-full max-w-full">
       <header className="hidden md:block fixed top-0 w-full z-50 bg-white/95 backdrop-blur-md border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-16">
           <div className="flex justify-between items-center h-20">
@@ -421,10 +421,10 @@ export default function Home() {
         )}
       </header>
 
-      <main>
-        <div className="main-container">
-          <section id="accueil" className="pt-32 md:pt-40 pb-20 bg-gradient-to-b from-sky-200/30 to-white">
-            <div className="section-container">
+      <main className="overflow-x-hidden w-full">
+        <div className="main-container overflow-x-hidden">
+          <section id="accueil" className="pt-32 md:pt-40 pb-20 bg-gradient-to-b from-sky-200/30 to-white overflow-hidden">
+            <div className="section-container px-4 sm:px-6">
               <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
               <motion.div
                 initial="hidden"
@@ -444,7 +444,7 @@ export default function Home() {
 
                 <motion.h1 
                   variants={fadeInUp}
-                  className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight"
+                  className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 leading-tight"
                 >
                   <AnimatedText text="Apprenez n'importe quelle" />
                   <motion.span 
@@ -457,9 +457,17 @@ export default function Home() {
                   </motion.span>
                 </motion.h1>
 
+                {/* Compteur visiteurs visible uniquement sur mobile */}
+                <motion.div 
+                  variants={fadeInUp}
+                  className="flex justify-center lg:hidden mb-6"
+                >
+                  <VisitorCounter />
+                </motion.div>
+
                 <motion.p 
                   variants={fadeInUp}
-                  className="text-lg text-gray-500 mb-8 leading-relaxed max-w-xl mx-auto lg:mx-0"
+                  className="text-base sm:text-lg text-gray-500 mb-8 leading-relaxed max-w-xl mx-auto lg:mx-0"
                 >
                   LangProgress est une plateforme e-learning automatisée d'apprentissage de langues. 
                   Testez la Démo de LangProgress !
@@ -467,21 +475,21 @@ export default function Home() {
 
                 <motion.div 
                   variants={fadeInUp}
-                  className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
+                  className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start w-full"
                 >
-                  <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+                  <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} className="w-full sm:w-auto">
                     <button
                       onClick={() => scrollToSection('faq')}
-                      className="bg-[#0A66C2] hover:bg-[#004182] text-white px-8 py-3.5 rounded-full font-semibold transition-all shadow-lg shadow-blue-200 flex items-center justify-center gap-2"
+                      className="w-full sm:w-auto bg-[#0A66C2] hover:bg-[#004182] text-white px-6 sm:px-8 py-3 sm:py-3.5 rounded-full font-semibold transition-all shadow-lg shadow-blue-200 flex items-center justify-center gap-2"
                     >
                       <HelpCircle className="w-4 h-4" />
                       En savoir plus
                     </button>
                   </motion.div>
-                  <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+                  <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} className="w-full sm:w-auto">
                     <Link
                       href="/login"
-                      className="bg-sky-500 hover:bg-sky-600 text-white px-8 py-3.5 rounded-full font-semibold transition-all flex items-center justify-center gap-2"
+                      className="w-full sm:w-auto bg-sky-500 hover:bg-sky-600 text-white px-6 sm:px-8 py-3 sm:py-3.5 rounded-full font-semibold transition-all flex items-center justify-center gap-2"
                     >
                       <Play className="w-4 h-4" />
                       Essayer la démo
@@ -494,12 +502,12 @@ export default function Home() {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
-                className="lg:w-1/2"
+                className="lg:w-1/2 w-full"
               >
-                <div className="relative">
-                  <div className="absolute -top-4 -left-4 w-24 h-24 bg-sky-200 rounded-full blur-3xl opacity-60" />
-                  <div className="absolute -bottom-4 -right-4 w-32 h-32 bg-sky-300 rounded-full blur-3xl opacity-40" />
-                  <div className="relative bg-white rounded-3xl shadow-2xl border border-gray-100 p-8">
+                <div className="relative mx-auto max-w-md lg:max-w-none">
+                  <div className="absolute -top-4 -left-4 w-24 h-24 bg-sky-200 rounded-full blur-3xl opacity-60 hidden sm:block" />
+                  <div className="absolute -bottom-4 -right-4 w-32 h-32 bg-sky-300 rounded-full blur-3xl opacity-40 hidden sm:block" />
+                  <div className="relative bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-gray-100 p-5 sm:p-8">
                     <div className="flex items-center gap-4 mb-6">
                       <div className="w-14 h-14 bg-sky-100 rounded-2xl flex items-center justify-center">
                         <TrendingUp className="w-7 h-7 text-sky-500" />
@@ -549,10 +557,10 @@ export default function Home() {
             </div>
           </section>
 
-          <section className="py-16 border-t border-gray-100">
-            <div className="section-container">
+          <section className="py-16 border-t border-gray-100 overflow-hidden">
+            <div className="section-container px-4 sm:px-6">
               <motion.div 
-                className="grid md:grid-cols-3 gap-8 md:gap-16 text-center"
+                className="grid grid-cols-3 gap-4 sm:gap-8 md:gap-16 text-center"
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: false, amount: 0.3 }}
@@ -598,8 +606,8 @@ export default function Home() {
             </div>
           </section>
 
-          <section id="features" className="py-20 border-t border-gray-100">
-            <div className="section-container">
+          <section id="features" className="py-20 border-t border-gray-100 overflow-hidden">
+            <div className="section-container px-4 sm:px-6">
               <div className="grid lg:grid-cols-2 gap-12 lg:gap-16">
                 <div className="lg:sticky lg:top-32 lg:h-fit">
                   <motion.div
@@ -678,8 +686,8 @@ export default function Home() {
             </div>
           </section>
 
-          <section id="founder" className="py-20 border-t border-gray-100">
-            <div className="section-container">
+          <section id="founder" className="py-20 border-t border-gray-100 overflow-hidden">
+            <div className="section-container px-4 sm:px-6">
               <motion.div
                 initial="hidden"
                 whileInView="visible"
@@ -707,24 +715,24 @@ export default function Home() {
                 viewport={{ once: false, amount: 0.2 }}
                 variants={fadeInUp}
               >
-                <div className="bg-white rounded-3xl border border-gray-200 p-8 md:p-12 shadow-lg">
-                  <div className="flex flex-col md:flex-row items-center gap-8">
+                <div className="bg-white rounded-2xl sm:rounded-3xl border border-gray-200 p-6 sm:p-8 md:p-12 shadow-lg">
+                  <div className="flex flex-col items-center gap-6 sm:gap-8">
                     <img 
                       src="/img/profil.jpeg" 
                       alt="Said Soidroudine" 
-                      className="w-32 h-32 rounded-full object-cover shadow-lg border-4 border-white"
+                      className="w-28 h-28 sm:w-32 sm:h-32 rounded-full object-cover shadow-lg border-4 border-white"
                     />
-                    <div className="text-center md:text-left flex-1">
-                      <h3 className="text-2xl font-bold text-gray-900 mb-2">Said Soidroudine</h3>
+                    <div className="text-center flex-1">
+                      <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Said Soidroudine</h3>
                       <p className="text-sky-500 font-semibold mb-4">Développeur Fullstack</p>
-                      <p className="text-gray-600 leading-relaxed mb-4">
+                      <p className="text-gray-600 leading-relaxed mb-4 text-sm sm:text-base">
                         Développeur autodidacte, passionné et animé par une grande détermination. 
                         Cette détermination me permet de passer d'une expression de besoin vers un projet fini et de livrer en temps et en heure.
                       </p>
-                      <p className="text-gray-600 leading-relaxed mb-4">
+                      <p className="text-gray-600 leading-relaxed mb-4 text-sm sm:text-base">
                         Je sais collaborer efficacement et exécuter ce qui doit être fait pour livrer les résultats en temps et en heure.
                       </p>
-                      <div className="flex flex-wrap gap-3 justify-center md:justify-start">
+                      <div className="flex flex-col sm:flex-row flex-wrap gap-3 justify-center">
                         <motion.a
                           href="https://www.linkedin.com/in/soidroudine-said/"
                           target="_blank"
@@ -755,8 +763,8 @@ export default function Home() {
             </div>
           </section>
 
-          <section id="faq" className="py-20 border-t border-gray-100">
-            <div className="section-container">
+          <section id="faq" className="py-20 border-t border-gray-100 overflow-hidden">
+            <div className="section-container px-4 sm:px-6">
               <motion.div
                 initial="hidden"
                 whileInView="visible"
@@ -827,8 +835,8 @@ export default function Home() {
             </div>
           </section>
 
-          <section id="tech" className="py-20 border-t border-gray-100">
-            <div className="section-container">
+          <section id="tech" className="py-20 border-t border-gray-100 overflow-hidden">
+            <div className="section-container px-4 sm:px-6">
               <motion.div
                 initial="hidden"
                 whileInView="visible"
@@ -914,7 +922,7 @@ export default function Home() {
           viewport={{ once: false, amount: 0.2 }}
           transition={{ duration: 0.4 }}
         >
-          <div className="section-container py-16 relative z-10">
+          <div className="section-container px-4 sm:px-6 py-16 relative z-10">
             <motion.div 
               className="flex flex-col md:flex-row justify-between items-center md:items-start gap-8 text-center md:text-left"
               initial="hidden"
