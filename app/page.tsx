@@ -470,15 +470,13 @@ export default function Home() {
                   className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
                 >
                   <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-                    <a
-                      href="https://www.linkedin.com/in/soidroudine-said/"
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    <button
+                      onClick={() => scrollToSection('faq')}
                       className="bg-[#0A66C2] hover:bg-[#004182] text-white px-8 py-3.5 rounded-full font-semibold transition-all shadow-lg shadow-blue-200 flex items-center justify-center gap-2"
                     >
-                      <Linkedin className="w-4 h-4" />
-                      Me suivre sur LinkedIn
-                    </a>
+                      <HelpCircle className="w-4 h-4" />
+                      En savoir plus
+                    </button>
                   </motion.div>
                   <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
                     <Link
@@ -711,9 +709,11 @@ export default function Home() {
               >
                 <div className="bg-white rounded-3xl border border-gray-200 p-8 md:p-12 shadow-lg">
                   <div className="flex flex-col md:flex-row items-center gap-8">
-                    <div className="w-32 h-32 bg-gradient-to-br from-sky-500 to-blue-600 rounded-2xl flex items-center justify-center text-white text-5xl font-bold shadow-lg">
-                      SS
-                    </div>
+                    <img 
+                      src="/img/profil.jpeg" 
+                      alt="Said Soidroudine" 
+                      className="w-32 h-32 rounded-full object-cover shadow-lg border-4 border-white"
+                    />
                     <div className="text-center md:text-left flex-1">
                       <h3 className="text-2xl font-bold text-gray-900 mb-2">Said Soidroudine</h3>
                       <p className="text-sky-500 font-semibold mb-4">Développeur Fullstack</p>
@@ -734,10 +734,10 @@ export default function Home() {
                           whileTap={{ scale: 0.95 }}
                         >
                           <Linkedin className="w-5 h-5" />
-                          LinkedIn
+                          Me suivre sur LinkedIn
                         </motion.a>
                         <motion.a
-                          href="https://github.com/saidSoidroudine"
+                          href="https://github.com/SaidS9113"
                           target="_blank"
                           rel="noopener noreferrer"
                           className="inline-flex items-center gap-2 bg-gray-900 hover:bg-gray-800 text-white px-5 py-2.5 rounded-full font-semibold transition-colors"
@@ -967,7 +967,7 @@ export default function Home() {
                     </a>
                   </li>
                   <li>
-                    <a href="https://github.com/saidSoidroudine" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-sky-500 font-medium transition-colors flex items-center gap-2">
+                    <a href="https://github.com/SaidS9113" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-sky-500 font-medium transition-colors flex items-center gap-2">
                       <Github className="w-4 h-4" />
                       GitHub
                     </a>
