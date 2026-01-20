@@ -103,9 +103,10 @@ export async function sendWelcomeEmail(email: string, username?: string) {
         <strong>Ce qui vous attend :</strong>
       </p>
       <ul style="margin: 10px 0 0; padding-left: 20px; color: #555;">
-        <li>Des cours structurés et progressifs</li>
-        <li>Des exercices pratiques</li>
-        <li>Un suivi personnalisé de votre progression</li>
+        <li>Un tableau de bord automatisé pour suivre votre progression</li>
+        <li>Des leçons et quiz automatisés</li>
+        <li>Envoi de devoirs automatique une fois toutes les leçons et le quiz du chapitre complétés</li>
+        <li>Et bien plus encore !</li>
       </ul>
     </div>
     
