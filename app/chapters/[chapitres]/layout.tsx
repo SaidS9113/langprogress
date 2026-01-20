@@ -10,7 +10,6 @@ export default function ChapitreLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Sidebar ouverte par défaut sur mobile
   const [sidebarOpen, setSidebarOpen] = useState(true);
   
   // Vérifier aussi le localStorage pour compatibilité
