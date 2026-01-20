@@ -1,0 +1,392 @@
+// ============================================
+// SANDBOX E-LEARNING - Schema Prisma
+// PostgreSQL (Neon) pour production
+// ============================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// -------------------------
+// UTILISATEURS
+// -------------------------
+model User {
+  id                String           @id @default(cuid())
+  email             String           @unique
+  username          String?          @unique
+  password          String?
+  isActive          Boolean          @default(false)
+  stripeCustomerId  String?
+  stripeSessionId   String?
+  completedPages    String           @default("[]") // JSON string for SQLite
+  completedQuizzes  String           @default("[]") // JSON string for SQLite
+  completedPagesB   String           @default("[]") // Module B pages
+  completedQuizzesB String           @default("[]") // Module B quizzes
+  studyTimeSeconds  Int              @default(0)
+  resetToken        String?
+  resetTokenExpires DateTime?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  // gender            String?       // Champ désactivé
+  welcomeEmailSent  Boolean          @default(false)
+
+  // Système d'abonnement
+  accountType             String      @default("INACTIVE")
+  subscriptionPlan        String?     // SOLO ou COACHING
+  subscriptionStartDate   DateTime?
+  subscriptionEndDate     DateTime?
+  stripeSubscriptionId    String?
+  
+  deviceFingerprint String?
+
+  homeworkSends     HomeworkSend[]
+  moduleB_HomeworkSends ModuleB_HomeworkSend[]
+  payments          Payment[]
+  quizAttempts      QuizAttempt[]
+  videoWatches      VideoWatch[]
+  whatsappMessages  WhatsAppMessage[]
+  levelPurchases    LevelPurchase[]
+  progressLogs      UserProgressLog[]
+  dailySnapshots    DailyProgressSnapshot[]
+}
+
+// -------------------------
+// NIVEAUX
+// -------------------------
+model Level {
+  id        Int       @id @default(autoincrement())
+  title     String
+  price     Int       @default(89)
+  module    String    @default("A") // A ou B
+  isActive  Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now())
+  chapters  Chapter[]
+  purchases LevelPurchase[]
+}
+
+// -------------------------
+// ACHAT DE NIVEAUX
+// -------------------------
+model LevelPurchase {
+  id           String   @id @default(cuid())
+  userId       String
+  levelId      Int
+  purchasedAt  DateTime @default(now())
+  user         User     @relation(fields: [userId], references: [id])
+  level        Level    @relation(fields: [levelId], references: [id])
+  payments     PaymentLevelPurchase[]
+  @@unique([userId, levelId])
+}
+
+// -------------------------
+// PAIEMENTS
+// -------------------------
+model Payment {
+  id                    String        @id @default(cuid())
+  stripeSessionId       String        @unique
+  stripePaymentIntentId String
+  amount                Int
+  currency              String
+  status                String        @default("PENDING")
+  userId                String
+  createdAt             DateTime      @default(now())
+  user                  User          @relation(fields: [userId], references: [id])
+  levelPurchases        PaymentLevelPurchase[]
+}
+
+// -------------------------
+// TABLE PIVOT POUR PAIEMENTS / NIVEAUX
+// -------------------------
+model PaymentLevelPurchase {
+  id              String        @id @default(cuid())
+  paymentId       String
+  levelPurchaseId String
+  payment         Payment       @relation(fields: [paymentId], references: [id])
+  levelPurchase   LevelPurchase @relation(fields: [levelPurchaseId], references: [id])
+  @@unique([paymentId, levelPurchaseId])
+}
+
+// -------------------------
+// CHAPITRES ET VIDÉOS
+// -------------------------
+model Chapter {
+  id            Int      @id @default(autoincrement())
+  levelId       Int?
+  chapterNumber Int      @unique
+  title         String
+  introduction  String?
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @default(now())
+  level         Level?   @relation(fields: [levelId], references: [id])
+  videos        ChapterVideo[]
+  homeworks     Homework[]
+  quizzes       Quiz[]
+}
+
+model ChapterVideo {
+  id                String   @id @default(cuid())
+  chapterId         Int?
+  title             String
+  cloudflareVideoId String   @unique
+  thumbnailUrl      String?
+  duration          Int?
+  isActive          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @default(now())
+  chapter           Chapter? @relation(fields: [chapterId], references: [id])
+  videoWatches      VideoWatch[]
+}
+
+// -------------------------
+// VIDÉOS MODULE B
+// -------------------------
+model ModuleB_ChapterVideo {
+  id                String   @id @default(cuid())
+  chapterNumber     Int      @unique
+  title             String
+  cloudflareVideoId String   @unique
+  thumbnailUrl      String?
+  duration          Int?
+  isActive          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @default(now())
+}
+
+// -------------------------
+// DEVOIRS
+// -------------------------
+model Homework {
+  id        String   @id @default(cuid())
+  chapterId Int
+  title     String
+  content   String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  chapter   Chapter  @relation(fields: [chapterId], references: [id])
+  homeworkSends HomeworkSend[]
+}
+
+model HomeworkSend {
+  id           String     @id @default(cuid())
+  userId       String
+  homeworkId   String
+  sentAt       DateTime   @default(now())
+  emailSent    Boolean    @default(false)
+  type         String     @default("TEXT") // TEXT, AUDIO, FILE
+  textContent  String?
+  audioUrl     String?
+  fileUrls     String?    // JSON string
+  status       String     @default("PENDING") // PENDING, REVIEWED, CORRECTED
+  feedback     String?
+  correctedAt  DateTime?
+
+  user         User       @relation(fields: [userId], references: [id])
+  homework     Homework   @relation(fields: [homeworkId], references: [id])
+
+  @@unique([userId, homeworkId])
+}
+
+// -------------------------
+// DEVOIRS MODULE B
+// -------------------------
+model ModuleB_Homework {
+  id        String   @id @default(cuid())
+  chapterId Int      @unique
+  title     String
+  content   String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  homeworkSends ModuleB_HomeworkSend[]
+}
+
+model ModuleB_HomeworkSend {
+  id              String     @id @default(cuid())
+  userId          String
+  homeworkId      String
+  sentAt          DateTime   @default(now())
+  emailSent       Boolean    @default(false)
+  type            String     @default("TEXT")
+  textContent     String?
+  audioUrl        String?
+  fileUrls        String?
+  status          String     @default("PENDING")
+  feedback        String?
+  correctedAt     DateTime?
+
+  user            User                @relation(fields: [userId], references: [id])
+  homework        ModuleB_Homework    @relation(fields: [homeworkId], references: [id])
+
+  @@unique([userId, homeworkId])
+}
+
+// -------------------------
+// QUIZ
+// -------------------------
+model Quiz {
+  id        String   @id @default(cuid())
+  chapterId Int
+  title     String
+  questions String   // JSON string for SQLite
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  chapter   Chapter  @relation(fields: [chapterId], references: [id])
+  quizAttempts QuizAttempt[]
+}
+
+model QuizAttempt {
+  id          String   @id @default(cuid())
+  quizId      String
+  userId      String
+  score       Int?
+  completedAt DateTime @default(now())
+  quiz        Quiz     @relation(fields: [quizId], references: [id])
+  user        User     @relation(fields: [userId], references: [id])
+}
+// -------------------------
+// SUIVI DES VIDÉOS
+// -------------------------
+model VideoWatch {
+  id              String       @id @default(cuid())
+  userId          String
+  videoId         String
+  watchedAt       DateTime     @default(now())
+  durationWatched Int          @default(0)
+  user            User         @relation(fields: [userId], references: [id])
+  chapterVideo    ChapterVideo @relation(fields: [videoId], references: [id])
+}
+
+// -------------------------
+// SUPPORT / MESSAGES
+// -------------------------
+model WhatsAppMessage {
+  id         String   @id @default(cuid())
+  userId     String
+  message    String
+  sentByUser Boolean  @default(true)
+  isDeleted  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id])
+}
+
+// -------------------------
+// LOGS
+// -------------------------
+model AuditLog {
+  id          String   @id @default(cuid())
+  tableName   String
+  recordId    String
+  action      String
+  oldValues   String?  // JSON string
+  newValues   String?  // JSON string
+  userId      String?
+  timestamp   DateTime @default(now())
+}
+
+// -------------------------
+// HISTORIQUE PROGRESSION
+// -------------------------
+model UserProgressLog {
+  id            String   @id @default(cuid())
+  userId        String
+  actionType    String   // "PAGE_COMPLETED", "QUIZ_COMPLETED"
+  pageNumber    Int?
+  chapterId     Int?
+  completedAt   DateTime @default(now())
+  user          User     @relation(fields: [userId], references: [id])
+}
+
+// -------------------------
+// SNAPSHOT QUOTIDIEN
+// -------------------------
+model DailyProgressSnapshot {
+  id                    String   @id @default(cuid())
+  userId                String
+  module                String   @default("A")
+  pagesCompletedCount   Int      @default(0)
+  quizzesCompletedCount Int      @default(0)
+  progressPercentage    Int      @default(0)
+  snapshotDate          DateTime
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  user                  User     @relation(fields: [userId], references: [id])
+  
+  @@unique([userId, snapshotDate, module])
+}
+
+model Visitor {
+  id          String   @id @default(cuid())
+  ipAddress   String   // Pas de @unique - permet plusieurs entrées pour inscriptions
+  userAgent   String?
+  source      String?  // "demo" ou "register" pour identifier l'origine
+  
+  // Informations de localisation
+  country     String?
+  countryCode String?
+  city        String?
+  region      String?
+  timezone    String?
+  
+  // Informations de l'appareil
+  deviceType  String?  // mobile, tablet, desktop
+  deviceBrand String?  // Apple, Samsung, etc.
+  deviceModel String?  // iPhone 14, Galaxy S23, etc.
+  osName      String?  // iOS, Android, Windows, macOS
+  osVersion   String?
+  browserName String?  // Chrome, Safari, Firefox
+  browserVersion String?
+  
+  // Informations de connexion
+  isp         String?  // Fournisseur d'accès internet
+  
+  // Date/heure France
+  visitedAtFrance String?  // Date/heure formatée en France
+  
+  createdAt   DateTime @default(now())
+  
+  @@index([ipAddress]) // Index pour recherche rapide
+}
+
+// Table pour tracker TOUTES les inscriptions (même IP = nouvelle entrée)
+model Registration {
+  id          String   @id @default(cuid())
+  email       String   // Email de l'inscription
+  ipAddress   String   // Pas de @unique - permet plusieurs par IP
+  userAgent   String?
+  
+  // Informations de localisation
+  country     String?
+  countryCode String?
+  city        String?
+  region      String?
+  timezone    String?
+  
+  // Informations de l'appareil
+  deviceType  String?
+  deviceBrand String?
+  deviceModel String?
+  osName      String?
+  osVersion   String?
+  browserName String?
+  browserVersion String?
+  
+  // Informations de connexion
+  isp         String?
+  
+  // Module choisi
+  selectedModule String?  // A ou B
+  
+  // Date/heure France
+  registeredAtFrance String?
+  
+  createdAt   DateTime @default(now())
+}

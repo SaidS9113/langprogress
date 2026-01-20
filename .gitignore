@@ -48,7 +48,6 @@ next-env.d.ts
 # DATABASE & PRISMA
 # ===========================================
 /lib/generated/prisma
-prisma/schema.prisma
 prisma/*.db
 prisma/*.db-journal
 prisma/sandbox.db
