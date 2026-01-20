@@ -305,7 +305,7 @@ export default function SidebarContent() {
                           >
                             {!isProfessorMode && (
                               <button
-                                onClick={(e) => handleTogglePageCompletion(lesson.lessonNumber, e)}
+                                onClick={(e) => handleTogglePageCompletion(globalPageNum, e)}
                                 className="flex-shrink-0"
                               >
                                 {isCompleted ? (

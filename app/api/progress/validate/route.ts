@@ -91,6 +91,30 @@ export async function POST(request: NextRequest) {
           },
         });
 
+        // Vérifier si le chapitre est maintenant complet et envoyer le devoir par email
+        const currentQuizzes: number[] = JSON.parse(
+          (module === 'B' ? user.completedQuizzesB : user.completedQuizzes) || '[]'
+        );
+
+        // Déterminer le numéro du chapitre à partir du pageNumber
+        const chapterNum = Math.ceil(pageNumber / 3);
+
+        if (isChapterComplete(chapterNum, currentPages, currentQuizzes, module as 'A' | 'B')) {
+          const chapter = chapters.find(c => c.chapterNumber === chapterNum);
+          const homeworkTitle = chapter?.title || `Chapitre ${chapterNum}`;
+          
+          try {
+            await sendChapterHomeworkEmail(
+              user.email,
+              chapterNum,
+              homeworkTitle
+            );
+            console.log(`[PROGRESS] Email devoir envoyé pour chapitre ${chapterNum} à ${user.email}`);
+          } catch (emailError) {
+            console.error('[PROGRESS] Erreur envoi email devoir:', emailError);
+          }
+        }
+
         return NextResponse.json({
           success: true,
           message: `Page ${pageNumber} validée`,
